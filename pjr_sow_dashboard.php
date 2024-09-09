@@ -103,6 +103,24 @@
                     <button type="submit">Show Records with Empty SOW No</button>
                 </form>
 
+                <!-- Filter Records by Empty CAPEX or OPEX Form -->
+                <form action="pjr_sow_dashboard.php" method="get" style="display: inline-block;">
+                    <input type="hidden" name="filter_empty_capex_opex" value="1">
+                    <button type="submit">Show Records with Empty CAPEX or OPEX</button>
+                </form>
+
+                <!-- Filter Records by Empty Assigned Staff Form -->
+                <form action="pjr_sow_dashboard.php" method="get" style="display: inline-block;">
+                    <input type="hidden" name="filter_empty_assigned_staff" value="1">
+                    <button type="submit">Show Records with Empty Assigned Staff</button>
+                </form>
+
+                <!-- Filter Records by Empty Link Form -->
+                <form action="pjr_sow_dashboard.php" method="get" style="display: inline-block;">
+                    <input type="hidden" name="filter_empty_link" value="1">
+                    <button type="submit">Show Records with Empty Link</button>
+                </form>
+
                 <!-- Clear Filter Button -->
                 <button class="danger-button" onclick="window.location.href = 'pjr_sow_dashboard.php'">Clear
                     Filter</button>
@@ -118,6 +136,9 @@
         // Initialize variables for search and filter
         $search = isset($_GET['search']) ? $_GET['search'] : '';
         $filterEmptySOW = isset($_GET['filter_empty_sow']) ? $_GET['filter_empty_sow'] : '';
+        $filterEmptyCapexOpex = isset($_GET['filter_empty_capex_opex']) ? $_GET['filter_empty_capex_opex'] : '';
+        $filterEmptyAssignedStaff = isset($_GET['filter_empty_assigned_staff']) ? $_GET['filter_empty_assigned_staff'] : '';
+        $filterEmptyLink = isset($_GET['filter_empty_link']) ? $_GET['filter_empty_link'] : '';
 
         // Build the base SQL query
         $sql = "SELECT * FROM `pjr_sow` WHERE 1=1"; // Using '1=1' to make it easier to add conditions
@@ -130,6 +151,21 @@
         // Apply filter for empty SOW No if the button is clicked
         if ($filterEmptySOW) {
             $sql .= " AND (TRIM(`SOW_No`) = '' OR `SOW_No` IS NULL OR TRIM(`SOW_No`) = 'SOW Is Required')";
+        }
+
+        // Apply filter for empty CAPEX or OPEX, except for records with "SOW Not Required"
+        if ($filterEmptyCapexOpex) {
+            $sql .= " AND ((`Total CAPEX (USD)` IS NULL OR `Total CAPEX (USD)` = 0 OR `Estimated OPEX (USD)` IS NULL OR `Estimated OPEX (USD)` = 0) AND `SOW_No` != 'SOW Not Required')";
+        }
+
+        // Apply filter for empty Assigned Staff
+        if ($filterEmptyAssignedStaff) {
+            $sql .= " AND (TRIM(`Assigned_Staff`) = '' OR `Assigned_Staff` IS NULL)";
+        }
+
+        // Apply filter for empty Link
+        if ($filterEmptyLink) {
+            $sql .= " AND (TRIM(`Link`) = '' OR `Link` IS NULL)";
         }
 
         $result = $conn->query($sql);

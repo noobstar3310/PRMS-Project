@@ -100,7 +100,6 @@
     </div>
 
     <script>
-    // handle button to pop up
     document.addEventListener('DOMContentLoaded', function() {
         const uploadButton = document.getElementById('uploadButton');
         const fileUploadDialog = document.getElementById('fileUploadDialog');
