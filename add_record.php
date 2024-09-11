@@ -18,10 +18,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['excelFile'])) {
 
             // Start from the second row (skip the header)
             for ($row = 2; $row <= count($sheetData); $row++) {
+                $PR_No = trim($sheetData[$row]['D']); // Fetch PR_No and trim whitespace
+
+                // Skip processing if the PR_No is empty
+                if (empty($PR_No)) {
+                    continue;
+                }
+
+                // Fetch other values from the Excel row
                 $BG = $sheetData[$row]['A'];
                 $BU = $sheetData[$row]['B'];
                 $Title = $sheetData[$row]['C'];
-                $PR_No = $sheetData[$row]['D'];
                 $SOW_No = $sheetData[$row]['E'];
                 $Requestor = $sheetData[$row]['F'];
                 $Created_Date = $sheetData[$row]['G'];
@@ -42,19 +49,47 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['excelFile'])) {
                 $Estimated_OPEX = NULL;
                 $Remarks = NULL;
 
-                // Prepare the SQL INSERT statement
-                $sql = "INSERT INTO pjr_sow (BG, BU, Title, PR_No, SOW_No, Requestor, Created_Date, Working_Group, Budgeted, Assigned_Staff, Benefits, Savings, Risk, Budget_Amo, Scoping_Lead_Time, Status, PMO_Status, Link, `Total CAPEX (USD)`, `Estimated OPEX (USD)`, Remarks)
+                // Check if PR_No already exists
+                $check_sql = "SELECT * FROM pjr_sow WHERE PR_No = ?";
+                $check_stmt = $conn->prepare($check_sql);
+                $check_stmt->bind_param("s", $PR_No);
+                $check_stmt->execute();
+                $result = $check_stmt->get_result();
+
+                if ($result->num_rows > 0) {
+                    // If PR_No exists, update the record
+                    $update_sql = "UPDATE pjr_sow SET 
+                        BG = ?, BU = ?, Title = ?, SOW_No = ?, Requestor = ?, 
+                        Created_Date = ?, Working_Group = ?, Budgeted = ?, 
+                        Benefits = ?, Savings = ?, Risk = ?, Budget_Amo = ?, 
+                        Scoping_Lead_Time = ?, Status = ?, PMO_Status = ?, 
+                        `Total CAPEX (USD)` = ?, `Estimated OPEX (USD)` = ?, Remarks = ?
+                        WHERE PR_No = ?";
+
+                    $update_stmt = $conn->prepare($update_sql);
+                    $update_stmt->bind_param("sssssssssssssssssss", $BG, $BU, $Title, $SOW_No, $Requestor, 
+                        $Created_Date, $Working_Group, $Budgeted, $Benefits, $Savings, 
+                        $Risk, $Budget_Amo, $Scoping_Lead_Time, $Status, $PMO_Status, 
+                        $Total_CAPEX, $Estimated_OPEX, $Remarks, $PR_No);
+
+                    if (!$update_stmt->execute()) {
+                        echo "Error updating record: " . $update_stmt->error;
+                    }
+                } else {
+                    // If PR_No doesn't exist, insert a new record
+                    $insert_sql = "INSERT INTO pjr_sow (BG, BU, Title, PR_No, SOW_No, Requestor, Created_Date, Working_Group, Budgeted, Assigned_Staff, Benefits, Savings, Risk, Budget_Amo, Scoping_Lead_Time, Status, PMO_Status, Link, `Total CAPEX (USD)`, `Estimated OPEX (USD)`, Remarks)
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-                $stmt = $conn->prepare($sql);
-                $stmt->bind_param("ssssssssssssddddsssss", $BG, $BU, $Title, $PR_No, $SOW_No, $Requestor, $Created_Date, $Working_Group, $Budgeted, $Assigned_Staff, $Benefits, $Savings, $Risk, $Budget_Amo, $Scoping_Lead_Time, $Status, $PMO_Status, $Link, $Total_CAPEX, $Estimated_OPEX, $Remarks);
+                    $insert_stmt = $conn->prepare($insert_sql);
+                    $insert_stmt->bind_param("ssssssssssssddddsssss", $BG, $BU, $Title, $PR_No, $SOW_No, $Requestor, $Created_Date, $Working_Group, $Budgeted, $Assigned_Staff, $Benefits, $Savings, $Risk, $Budget_Amo, $Scoping_Lead_Time, $Status, $PMO_Status, $Link, $Total_CAPEX, $Estimated_OPEX, $Remarks);
 
-                if (!$stmt->execute()) {
-                    echo "Error inserting record: " . $stmt->error;
+                    if (!$insert_stmt->execute()) {
+                        echo "Error inserting record: " . $insert_stmt->error;
+                    }
                 }
             }
 
-            echo "Records added successfully!";
+            echo "Records processed successfully!";
             header("Location: pjr_sow_dashboard.php");
             exit();
 
@@ -68,4 +103,3 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['excelFile'])) {
     echo "No file uploaded.";
 }
 ?>
-
