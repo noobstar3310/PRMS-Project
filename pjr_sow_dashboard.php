@@ -51,7 +51,6 @@
 </head>
 
 <body>
-    <!-- Top Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-custom">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">PJR-SOW Dashboard</a>
@@ -155,13 +154,25 @@
                         <h2>Filter Records by Empty Fields</h2>
                     </div>
                     <div class="card-footer">
+                        <!-- CAPEX and OPEX filters submit to server -->
+                        <form method="GET" action="pjr_sow_dashboard.php" class="d-inline-block">
+                            <input type="hidden" name="filter" value="capex_opex">
+                            <button type="submit" class="btn btn-dark btn-sm btn-custom">Show Empty CAPEX/OPEX</button>
+                        </form>
+                        <form method="GET" action="pjr_sow_dashboard.php" class="d-inline-block">
+                            <input type="hidden" name="filter" value="link">
+                            <button type="submit" class="btn btn-dark btn-sm btn-custom">Show Empty Link</button>
+                        </form>
+                        <form method="GET" action="pjr_sow_dashboard.php" class="d-inline-block">
+                            <input type="hidden" name="filter" value="assigned_staff">
+                            <button type="submit" class="btn btn-dark btn-sm btn-custom">Show Empty Assigned
+                                Staff</button>
+                        </form>
                         <button class="btn btn-dark btn-sm btn-custom" id="filterEmptySOW">Show Empty SOW No</button>
-                        <button class="btn btn-dark btn-sm btn-custom" id="filterEmptyCapexOpex">Show Empty
-                            CAPEX/OPEX</button>
-                        <button class="btn btn-dark btn-sm btn-custom" id="filterEmptyAssignedStaff">Show Empty Assigned
-                            Staff</button>
-                        <button class="btn btn-dark btn-sm btn-custom" id="filterEmptyLink">Show Empty Link</button>
-                        <button class="btn btn-danger btn-sm btn-custom mt-2" id="clearFilters">Clear Filters</button>
+
+                        <!-- Clear Filters Button -->
+                        <button class="btn btn-danger btn-sm btn-custom mt-2" id="clearFilters"
+                            onclick="window.location.href='pjr_sow_dashboard.php';">Clear Filters</button>
                     </div>
                 </div>
             </div>
@@ -203,10 +214,25 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Rows will be dynamically inserted here -->
                             <?php
                             include 'db_connect.php';
+                            
+                            // Default SQL query
                             $sql = "SELECT * FROM `pjr_sow`";
+                            
+                            // Handle filters submitted via PHP
+                            if (isset($_GET['filter'])) {
+                                $filter = $_GET['filter'];
+                                
+                                if ($filter == 'capex_opex') {
+                                    $sql .= " WHERE (`Total CAPEX (USD)` IS NULL OR `Total CAPEX (USD)` = 0) AND (`Estimated OPEX (USD)` IS NULL OR `Estimated OPEX (USD)` = 0)";
+                                } elseif ($filter == 'link') {
+                                    $sql .= " WHERE `Link` IS NULL OR `Link` = ''";
+                                } elseif ($filter == 'assigned_staff') {
+                                    $sql .= " WHERE `Assigned_Staff` IS NULL OR `Assigned_Staff` = '' OR `Assigned_Staff` = '0'";
+                                }
+                            }
+                            
                             $result = $conn->query($sql);
                             if ($result && $result->num_rows > 0) {
                                 while ($row = $result->fetch_assoc()) {

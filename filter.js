@@ -37,25 +37,25 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Filter Empty Fields Logic
     filterEmptySOW.addEventListener('click', function () {
-        filterRowsByEmptyField('SOW No');
+        filterRowsByEmptyField(4); // Column index for SOW No
     });
 
     filterEmptyCapexOpex.addEventListener('click', function () {
-        filterRowsByEmptyField('Total CAPEX (USD)', 'Estimated OPEX (USD)');
+        filterRowsByEmptyCapexOpex(18, 19); // Column index for CAPEX and OPEX
     });
 
+    // Filter for Empty Assigned Staff
     filterEmptyAssignedStaff.addEventListener('click', function () {
-        filterRowsByEmptyField('Assigned Staff');
+        filterRowsByEmptyField(9); // Column index for Assigned Staff
     });
 
     filterEmptyLink.addEventListener('click', function () {
-        filterRowsByEmptyField('Link');
+        filterRowsByEmptyField(17); // Column index for Link
     });
 
-    // Clear All Filters
+    // Clear All Filters (this refreshes the page to reset all filters)
     clearFilters.addEventListener('click', function () {
-        allRows.forEach(row => row.style.display = '');
-        searchPrInput.value = '';
+        window.location.reload(); // Refreshes the page to clear all filters
     });
 
     function getSelectedCheckboxValues(menu) {
@@ -69,24 +69,46 @@ document.addEventListener('DOMContentLoaded', function () {
         allRows.forEach(row => {
             const prNo = row.cells[3].innerText.toLowerCase();
             const bg = row.cells[0].innerText;
-            const sowNo = row.cells[4].innerText;
+            const sowNo = row.cells[4].innerText.trim(); // SOW No column
             const workingGroup = row.cells[7].innerText;
-
+    
+            // Handle case for selecting "*blank*" for SOW No
+            const sowMatch = (!selectedSowNos.length || 
+                             (selectedSowNos.includes('*blank*') && (!sowNo || sowNo === '')) ||
+                             selectedSowNos.includes(sowNo));
+    
             const show = (!searchValue || prNo.includes(searchValue)) &&
-                (!selectedBGs.length || selectedBGs.includes(bg)) &&
-                (!selectedSowNos.length || selectedSowNos.includes(sowNo)) &&
-                (!selectedWorkingGroups.length || selectedWorkingGroups.includes(workingGroup));
-
+                         (!selectedBGs.length || selectedBGs.includes(bg)) &&
+                         sowMatch &&
+                         (!selectedWorkingGroups.length || selectedWorkingGroups.includes(workingGroup));
+    
             row.style.display = show ? '' : 'none';
         });
     }
 
-    function filterRowsByEmptyField(...fieldNames) {
+    // Function: Filter rows by empty fields (for single columns like SOW No, Assigned Staff, Link)
+    function filterRowsByEmptyField(columnIndex) {
         allRows.forEach(row => {
-            const fields = fieldNames.map(name => row.querySelector(`td:contains(${name})`).innerText.trim());
-            const show = fields.some(field => !field || field === '0' || field === 'NULL');
+            const cellValue = row.cells[columnIndex].innerText.trim();
+            const isEmpty = !cellValue || cellValue === '0' || cellValue === 'NULL' || cellValue === '' || cellValue === '-';
+            row.style.display = isEmpty ? '' : 'none'; // Show rows where the field is empty
+        });
+    }
 
-            row.style.display = show ? '' : 'none';
+    // Function: Filter rows by empty CAPEX/OPEX (both must be empty or 0)
+    function filterRowsByEmptyCapexOpex(capexIndex, opexIndex) {
+        allRows.forEach(row => {
+            const capex = row.cells[capexIndex].innerText.trim();
+            const opex = row.cells[opexIndex].innerText.trim();
+
+            // Check if CAPEX and OPEX are empty or zero
+            const isCapexEmpty = !capex || capex === '0' || capex === 'NULL' || capex === '';
+            const isOpexEmpty = !opex || opex === '0' || opex === 'NULL' || opex === '';
+
+            // Both CAPEX and OPEX must be empty or zero for the row to be shown
+            const isEmptyCapexOpex = isCapexEmpty && isOpexEmpty;
+
+            row.style.display = isEmptyCapexOpex ? '' : 'none';
         });
     }
 
@@ -119,111 +141,5 @@ document.addEventListener('DOMContentLoaded', function () {
             li.innerHTML = `<label><input type="checkbox" value="${option}"> ${option}</label>`;
             menu.appendChild(li);
         });
-    }
-});
-
-document.addEventListener('DOMContentLoaded', function () {
-    const recordsTable = document.getElementById('recordsTable');
-    const allRows = Array.from(recordsTable.querySelectorAll('tbody tr'));
-
-    const searchPrInput = document.getElementById('searchPrInput');
-    const filterEmptySOW = document.getElementById('filterEmptySOW');
-    const filterEmptyCapexOpex = document.getElementById('filterEmptyCapexOpex');
-    const filterEmptyAssignedStaff = document.getElementById('filterEmptyAssignedStaff');
-    const filterEmptyLink = document.getElementById('filterEmptyLink');
-    const clearFilters = document.getElementById('clearFilters');
-    const applyFilters = document.getElementById('applyFilters');
-
-    const bgDropdownMenu = document.getElementById('bgDropdownMenu');
-    const sowDropdownMenu = document.getElementById('sowDropdownMenu');
-    const workingGroupDropdownMenu = document.getElementById('workingGroupDropdownMenu');
-
-    // Event: Search by PR Number
-    searchPrInput.addEventListener('input', function () {
-        const searchValue = searchPrInput.value.toLowerCase();
-        filterRows(searchValue, '', '', '');
-    });
-
-    // Event: Apply Filters
-    applyFilters.addEventListener('click', function () {
-        const selectedBGs = getSelectedCheckboxValues(bgDropdownMenu);
-        const selectedSowNos = getSelectedCheckboxValues(sowDropdownMenu);
-        const selectedWorkingGroups = getSelectedCheckboxValues(workingGroupDropdownMenu);
-        filterRows(searchPrInput.value.toLowerCase(), selectedBGs, selectedSowNos, selectedWorkingGroups);
-    });
-
-    // Event: Filter by Empty SOW No
-    filterEmptySOW.addEventListener('click', function () {
-        filterRowsByEmptyField('SOW NO');
-    });
-
-    // Event: Filter by Empty CAPEX/OPEX
-    filterEmptyCapexOpex.addEventListener('click', function () {
-        filterRowsByEmptyField('Total CAPEX (USD)', 'Estimated OPEX (USD)');
-    });
-
-    // Event: Filter by Empty Assigned Staff
-    filterEmptyAssignedStaff.addEventListener('click', function () {
-        filterRowsByEmptyField('Assigned Staff');
-    });
-
-    // Event: Filter by Empty Link
-    filterEmptyLink.addEventListener('click', function () {
-        filterRowsByEmptyField('Link');
-    });
-
-    // Event: Clear Filters
-    clearFilters.addEventListener('click', function () {
-        allRows.forEach(row => row.style.display = '');
-        searchPrInput.value = '';
-    });
-
-    // Function: Get selected checkboxes from dropdown menu
-    function getSelectedCheckboxValues(menu) {
-        const checkboxes = menu.querySelectorAll('input[type="checkbox"]');
-        return Array.from(checkboxes).filter(checkbox => checkbox.checked).map(checkbox => checkbox.value);
-    }
-
-    // Function: Filter rows based on search and dropdown filters
-    function filterRows(searchValue, selectedBGs, selectedSowNos, selectedWorkingGroups) {
-        allRows.forEach(row => {
-            const prNo = row.cells[3].innerText.toLowerCase();
-            const bg = row.cells[0].innerText;
-            const sowNo = row.cells[4].innerText;
-            const workingGroup = row.cells[7].innerText;
-
-            const show = (!searchValue || prNo.includes(searchValue)) &&
-                (!selectedBGs.length || selectedBGs.includes(bg)) &&
-                (!selectedSowNos.length || selectedSowNos.includes(sowNo)) &&
-                (!selectedWorkingGroups.length || selectedWorkingGroups.includes(workingGroup));
-
-            row.style.display = show ? '' : 'none';
-        });
-    }
-
-    // Function: Filter rows with empty fields
-    function filterRowsByEmptyField(...fieldNames) {
-        allRows.forEach(row => {
-            let show = false;
-            fieldNames.forEach(fieldName => {
-                const cellText = row.querySelector(`td:nth-child(${getFieldIndex(fieldName)})`).innerText.trim();
-                if (!cellText || cellText === '0' || cellText === 'NULL') {
-                    show = true;
-                }
-            });
-            row.style.display = show ? '' : 'none';
-        });
-    }
-
-    // Utility: Get column index based on field name
-    function getFieldIndex(fieldName) {
-        switch (fieldName) {
-            case 'SOW NO': return 5;
-            case 'Total CAPEX (USD)': return 18;
-            case 'Estimated OPEX (USD)': return 19;
-            case 'Assigned Staff': return 10;
-            case 'Link': return 17;
-            default: return -1;
-        }
     }
 });
