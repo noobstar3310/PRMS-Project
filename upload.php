@@ -5,36 +5,43 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file1']) && isset($_FILES['file2'])) {
-    $file1 = $_FILES['file1']['tmp_name'];
-    $file2 = $_FILES['file2']['tmp_name'];
-
-    // Load the first spreadsheet
-    $spreadsheet1 = IOFactory::load($file1);
-    $sheet1 = $spreadsheet1->getActiveSheet();
-
-    // Load the second spreadsheet
-    $spreadsheet2 = IOFactory::load($file2);
-    $sheet2 = $spreadsheet2->getActiveSheet();
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
+    $files = $_FILES['file'];
 
     // Create a new spreadsheet for the combined data
     $combinedSpreadsheet = new Spreadsheet();
     $combinedSheet = $combinedSpreadsheet->getActiveSheet();
 
-    // Copy the header from the first sheet to the combined sheet
-    $header = $sheet1->rangeToArray('A1:' . $sheet1->getHighestColumn() . '1');
-    $combinedSheet->fromArray($header, NULL, 'A1');
+    $isFirstFile = true; // Track whether it's the first file to include headers
+    $nextRow = 1; // Start from the first row in the combined sheet
 
-    // Copy the data from the first sheet (starting from the second row) to the combined sheet
-    $data1 = $sheet1->rangeToArray('A2:' . $sheet1->getHighestColumn() . $sheet1->getHighestRow());
-    $combinedSheet->fromArray($data1, NULL, 'A2');
+    // Loop through each uploaded file
+    for ($i = 0; $i < count($files['tmp_name']); $i++) {
+        // Skip if the file was not uploaded properly
+        if ($files['error'][$i] !== UPLOAD_ERR_OK) {
+            continue;
+        }
 
-    // Find the next empty row in the combined sheet
-    $nextRow = $combinedSheet->getHighestRow() + 1;
+        // Load the current spreadsheet
+        $filePath = $files['tmp_name'][$i];
+        $spreadsheet = IOFactory::load($filePath);
+        $sheet = $spreadsheet->getActiveSheet();
 
-    // Copy the data from the second sheet (starting from the second row) to the combined sheet
-    $data2 = $sheet2->rangeToArray('A2:' . $sheet2->getHighestColumn() . $sheet2->getHighestRow());
-    $combinedSheet->fromArray($data2, NULL, 'A' . $nextRow);
+        // If it's the first file, copy the header
+        if ($isFirstFile) {
+            $header = $sheet->rangeToArray('A1:' . $sheet->getHighestColumn() . '1');
+            $combinedSheet->fromArray($header, NULL, 'A1');
+            $isFirstFile = false; // Next files won't need the header
+            $nextRow++;
+        }
+
+        // Copy the data from the current sheet (starting from the second row) to the combined sheet
+        $data = $sheet->rangeToArray('A2:' . $sheet->getHighestColumn() . $sheet->getHighestRow());
+        $combinedSheet->fromArray($data, NULL, 'A' . $nextRow);
+
+        // Update the next row number for subsequent files
+        $nextRow = $combinedSheet->getHighestRow() + 1;
+    }
 
     // Set the filename for the combined file
     $filename = 'combined_file.xlsx';
@@ -48,6 +55,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file1']) && isset($_F
     $writer->save('php://output');
     exit();
 } else {
-    echo "Please upload both files.";
+    echo "Please upload at least one file.";
 }
 ?>
