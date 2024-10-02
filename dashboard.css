@@ -1,0 +1,101 @@
+body,
+html {
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fa;
+}
+
+/* Navigation Bar */
+.navbar-custom {
+  background-color: #333;
+  /* Dark grey color */
+}
+
+.navbar-custom .navbar-brand,
+.navbar-custom .nav-link {
+  color: #ffffff !important;
+}
+
+.navbar-custom .nav-link:hover {
+  color: #007bff !important;
+  /* Blue highlight from logo */
+}
+
+/* Main Container */
+.container-fluid {
+  padding-top: 20px;
+}
+
+.card-custom {
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Search Section */
+#searchPrInput {
+  border-radius: 25px;
+  padding: 10px 15px;
+  border: 2px solid #007bff;
+  /* Blue border */
+}
+
+/* Filter Cards */
+.dropdown-toggle {
+  border-radius: 25px;
+  padding: 10px 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.filter-card-header {
+  background-color: #007bff;
+  color: #fff;
+  border-radius: 10px 10px 0 0;
+}
+
+/* Filter Buttons */
+.btn-filter {
+  color: #fff !important;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 5px;
+  background-color: #007bff;
+}
+
+.btn-filter:hover {
+  background-color: #0056b3 !important;
+}
+
+/* Table Styling */
+.scrollable-table {
+  overflow-x: auto;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.table thead {
+  background-color: #007bff;
+  color: white;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: #f2f2f2;
+}
+
+.action-buttons a {
+  margin-right: 10px;
+}
+
+/* Accordion for Filters */
+.accordion-button:not(.collapsed) {
+  background-color: #007bff !important;
+  color: #ffffff !important;
+}
+
+/* Responsive Styling */
+@media (max-width: 768px) {
+  #searchPrInput {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+}

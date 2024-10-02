@@ -7,51 +7,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+    <link href="dashboard.css" rel="stylesheet" />
     <title>PJR-SOW Dashboard</title>
-    <style>
-    body,
-    html {
-        margin: 0;
-        padding: 0;
-        font-family: Arial, sans-serif;
-    }
-
-    .scrollable-table {
-        overflow-x: auto;
-        white-space: nowrap;
-        width: 100%;
-    }
-
-    .navbar-custom {
-        background-color: #007bff;
-    }
-
-    .navbar-custom .navbar-brand,
-    .navbar-custom .nav-link {
-        color: #ffffff;
-    }
-
-    .card-custom {
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .btn-custom {
-        padding: 10px 20px;
-        border-radius: 5px;
-        font-size: 16px;
-        margin: 10px 0;
-    }
-
-    .dropdown-menu {
-        max-height: 200px;
-        overflow-y: auto;
-    }
-    </style>
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-custom">
+    <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">PJR-SOW Dashboard</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -61,18 +22,23 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="landing_page.php">Home</a>
+                        <a class="nav-link" href="#"><i class="fas fa-home"></i> Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="add_option.php">Add Record</a>
+                        <a class="nav-link" href="add_option.php"><i class="fas fa-plus"></i> Add Record</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="update_via_excel.php">Update with Excel</a>
+                        <a class="nav-link" href="upload_page.php"><i class="fas fa-file-excel"></i> Append File</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="sow_cip_dashboard.php"><i class="fas fa-user"></i> SOW CIP
+                            Tracking</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="index.html">Logout</a>
+                        <a class="nav-link btn btn-outline-light" href="index.html"><i class="fas fa-sign-out-alt"></i>
+                            Logout</a>
                     </li>
                 </ul>
             </div>
@@ -80,18 +46,16 @@
     </nav>
 
     <!-- Main Content -->
-    <div class="container-fluid px-4">
-        <h1 class="mt-4">Dashboard</h1>
+    <div class="container-fluid">
+        <h1 class="text-dark mb-4">Dashboard</h1>
 
         <div class="row mb-4">
             <!-- Search by PR No -->
             <div class="col-lg-4 col-md-6 mb-4">
                 <div class="card bg-info text-white shadow card-custom h-100">
                     <div class="card-body">
-                        <h2>Search by PR No</h2>
-                    </div>
-                    <div class="card-footer">
-                        <input type="text" id="searchPrInput" class="form-control mb-2" placeholder="Search by PR No">
+                        <h3>Search by PR No</h3>
+                        <input type="text" id="searchPrInput" class="form-control" placeholder="Search by PR No">
                     </div>
                 </div>
             </div>
@@ -100,79 +64,93 @@
             <div class="col-lg-8 col-md-6 mb-4">
                 <div class="card bg-light text-dark shadow card-custom h-100">
                     <div class="card-body">
-                        <h2>Filter by BG, SOW No, and Working Group</h2>
-                    </div>
-                    <div class="card-footer">
-                        <div class="row mb-2">
+                        <h3 class="text-dark">Filter by BG, SOW No, and Working Group</h3>
+                        <div class="row mb-3">
                             <!-- Filter by BG -->
-                            <div class="col-4">
+                            <div class="col-md-4 mb-2">
                                 <div class="dropdown">
-                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="bgDropdown"
-                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                    <button class="btn btn-secondary dropdown-toggle w-100" type="button"
+                                        id="bgDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                         Select BG
                                     </button>
-                                    <ul class="dropdown-menu" id="bgDropdownMenu"></ul>
+                                    <ul class="dropdown-menu w-100" id="bgDropdownMenu">
+                                        <li><a class="dropdown-item" href="#">BG1</a></li>
+                                        <li><a class="dropdown-item" href="#">BG2</a></li>
+                                        <li><a class="dropdown-item" href="#">BG3</a></li>
+                                    </ul>
                                 </div>
                             </div>
 
                             <!-- Filter by SOW No -->
-                            <div class="col-4">
+                            <div class="col-md-4 mb-2">
                                 <div class="dropdown">
-                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="sowDropdown"
-                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                    <button class="btn btn-secondary dropdown-toggle w-100" type="button"
+                                        id="sowDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                         Select SOW No
                                     </button>
-                                    <ul class="dropdown-menu" id="sowDropdownMenu"></ul>
+                                    <ul class="dropdown-menu w-100" id="sowDropdownMenu">
+                                        <li><a class="dropdown-item" href="#">SOW1</a></li>
+                                        <li><a class="dropdown-item" href="#">SOW2</a></li>
+                                        <li><a class="dropdown-item" href="#">SOW3</a></li>
+                                    </ul>
                                 </div>
                             </div>
 
                             <!-- Filter by Working Group -->
-                            <div class="col-4">
+                            <div class="col-md-4 mb-2">
                                 <div class="dropdown">
-                                    <button class="btn btn-secondary dropdown-toggle" type="button"
+                                    <button class="btn btn-secondary dropdown-toggle w-100" type="button"
                                         id="workingGroupDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                         Select Working Group
                                     </button>
-                                    <ul class="dropdown-menu" id="workingGroupDropdownMenu"></ul>
+                                    <ul class="dropdown-menu w-100" id="workingGroupDropdownMenu">
+                                        <li><a class="dropdown-item" href="#">Group 1</a></li>
+                                        <li><a class="dropdown-item" href="#">Group 2</a></li>
+                                        <li><a class="dropdown-item" href="#">Group 3</a></li>
+                                    </ul>
                                 </div>
                             </div>
                         </div>
                         <!-- Apply Filters Button -->
-                        <div class="text-end">
-                            <button class="btn btn-primary btn-custom" id="applyFilters">Apply Filters</button>
-                        </div>
+                        <button class="btn btn-primary w-100 btn-custom" id="applyFilters"><i class="fas fa-filter"></i>
+                            Apply Filters</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Filter Records by Empty Fields -->
-        <div class="row mb-4">
-            <div class="col-lg-12">
-                <div class="card bg-warning text-dark shadow card-custom h-100">
-                    <div class="card-body">
-                        <h2>Filter Records by Empty Fields</h2>
-                    </div>
-                    <div class="card-footer">
-                        <!-- CAPEX and OPEX filters submit to server -->
+        <!-- Filter Records by Empty Fields Section -->
+        <div class="accordion mb-4" id="filterAccordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="filterHeading">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#filterCollapse" aria-expanded="false" aria-controls="filterCollapse">
+                        <i class="fas fa-filter"></i> Filter Records by Empty Fields
+                    </button>
+                </h2>
+                <div id="filterCollapse" class="accordion-collapse collapse" aria-labelledby="filterHeading"
+                    data-bs-parent="#filterAccordion">
+                    <div class="accordion-body">
                         <form method="GET" action="pjr_sow_dashboard.php" class="d-inline-block">
                             <input type="hidden" name="filter" value="capex_opex">
-                            <button type="submit" class="btn btn-dark btn-sm btn-custom">Show Empty CAPEX/OPEX</button>
+                            <button type="submit" class="btn-filter"><i class="fas fa-dollar-sign"></i> Show Empty
+                                CAPEX/OPEX</button>
                         </form>
                         <form method="GET" action="pjr_sow_dashboard.php" class="d-inline-block">
                             <input type="hidden" name="filter" value="link">
-                            <button type="submit" class="btn btn-dark btn-sm btn-custom">Show Empty Link</button>
+                            <button type="submit" class="btn-filter"><i class="fas fa-link"></i> Show Empty
+                                Link</button>
                         </form>
                         <form method="GET" action="pjr_sow_dashboard.php" class="d-inline-block">
                             <input type="hidden" name="filter" value="assigned_staff">
-                            <button type="submit" class="btn btn-dark btn-sm btn-custom">Show Empty Assigned
+                            <button type="submit" class="btn-filter"><i class="fas fa-users"></i> Show Empty Assigned
                                 Staff</button>
                         </form>
-                        <button class="btn btn-dark btn-sm btn-custom" id="filterEmptySOW">Show Empty SOW No</button>
-
-                        <!-- Clear Filters Button -->
-                        <button class="btn btn-danger btn-sm btn-custom mt-2" id="clearFilters"
-                            onclick="window.location.href='pjr_sow_dashboard.php';">Clear Filters</button>
+                        <button class="btn-filter" id="filterEmptySOW"><i class="fas fa-file-alt"></i> Show Empty SOW
+                            No</button>
+                        <button class="btn btn-danger btn-sm mt-2" id="clearFilters"
+                            onclick="window.location.href='pjr_sow_dashboard.php';"><i class="fas fa-times"></i> Clear
+                            Filters</button>
                     </div>
                 </div>
             </div>
@@ -181,12 +159,11 @@
         <!-- Record Table -->
         <div class="card mb-4 card-custom" style="margin: 20px;">
             <div class="card-header">
-                <i class="fas fa-table mr-1"></i>
-                Records
+                <i class="fas fa-table"></i> Records
             </div>
             <div class="card-body">
                 <div class="table-responsive scrollable-table">
-                    <table id="recordsTable" class="table table-bordered">
+                    <table id="recordsTable" class="table table-bordered table-striped">
                         <thead class="thead-light">
                             <tr>
                                 <th>BG</th>
@@ -277,9 +254,8 @@
         </div>
     </div>
 
-    <!-- External JS for filtering logic -->
-    <script src="filter.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="filter.js"></script>
 </body>
 
 </html>
