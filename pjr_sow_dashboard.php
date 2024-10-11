@@ -14,7 +14,7 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">PJR-SOW Dashboard</a>
+            <a class="navbar-brand" href="#">PRMS Dashboard</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -47,8 +47,6 @@
 
     <!-- Main Content -->
     <div class="container-fluid">
-        <h1 class="text-dark mb-4">Dashboard</h1>
-
         <div class="row mb-4">
             <!-- Search by PR No -->
             <div class="col-lg-4 col-md-6 mb-4">
