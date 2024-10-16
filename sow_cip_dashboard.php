@@ -25,7 +25,7 @@
                         <a class="nav-link" href="#"><i class="fas fa-home"></i> Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="add_option.php"><i class="fas fa-plus"></i> Add Record</a>
+                        <a class="nav-link" href="sow_cip_add_option.php"><i class="fas fa-plus"></i> Add Record</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="upload_page.php"><i class="fas fa-file-excel"></i> Append File</a>
